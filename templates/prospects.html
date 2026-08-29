@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Prospects – OutreachPro{% endblock %}
+{% block content %}
+<div class="top"><div><h1>Prospects</h1><p>Search and manage your business prospects.</p></div><a class="btn" href="{{ url_for('add_prospect') }}">+ Add Prospect</a></div>
+<form class="filters">
+<input name="q" value="{{ q }}" placeholder="Search name, company or email">
+<select name="status"><option value="">All statuses</option>{% for s in statuses %}<option {% if selected_status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+<button class="btn secondary">Search</button>
+</form>
+<section class="panel">
+<table>
+<tr><th>Name</th><th>Company</th><th>Status</th><th>Value</th><th>Follow-up</th><th>Source</th></tr>
+{% for p in prospects %}
+<tr>
+<td><a href="{{ url_for('prospect_detail', pid=p['id']) }}">{{ p["name"] }}</a><small>{{ p["email"] or "No email" }}</small></td>
+<td>{{ p["company"] }}</td><td><span class="pill">{{ p["status"] }}</span></td>
+<td>₹{{ "{:,.0f}".format(p["value"]) }}</td><td>{{ p["next_followup"] or "—" }}</td><td>{{ p["source"] or "—" }}</td>
+</tr>
+{% else %}<tr><td colspan="6" class="muted">No prospects found.</td></tr>{% endfor %}
+</table>
+</section>
+{% endblock %}

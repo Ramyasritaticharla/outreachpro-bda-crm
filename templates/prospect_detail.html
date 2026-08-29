@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ prospect["name"] }} – OutreachPro{% endblock %}
+{% block content %}
+<div class="top"><div><h1>{{ prospect["name"] }}</h1><p>{{ prospect["company"] }} · {{ prospect["email"] or "No email" }}</p></div><a class="btn secondary" href="{{ url_for('prospects') }}">← Back</a></div>
+<div class="grid two">
+<form class="panel form" method="post">
+<h2>Prospect Details</h2>
+<div class="form-grid">
+<label>Name<input name="name" value="{{ prospect['name'] }}" required></label>
+<label>Company<input name="company" value="{{ prospect['company'] }}" required></label>
+<label>Email<input name="email" value="{{ prospect['email'] or '' }}"></label>
+<label>Phone<input name="phone" value="{{ prospect['phone'] or '' }}"></label>
+<label>Source<input name="source" value="{{ prospect['source'] or '' }}"></label>
+<label>Status<select name="status">{% for s in statuses %}<option {% if prospect['status']==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label>
+<label>Value (₹)<input type="number" name="value" value="{{ prospect['value'] }}"></label>
+<label>Next Follow-up<input type="date" name="next_followup" value="{{ prospect['next_followup'] or '' }}"></label>
+</div>
+<label>Notes<textarea name="notes" rows="5">{{ prospect["notes"] or "" }}</textarea></label>
+<button class="btn">Update Prospect</button>
+</form>
+
+<section class="panel">
+<h2>Outreach Activity</h2>
+<form class="activity-form" method="post" action="{{ url_for('add_activity', pid=prospect['id']) }}">
+<select name="activity_type">{% for a in activity_types %}<option>{{ a }}</option>{% endfor %}</select>
+<input type="date" name="activity_date" value="{{ today or '' }}" required>
+<textarea name="notes" placeholder="What happened?"></textarea>
+<button class="btn">Log Activity</button>
+</form>
+{% for a in activities %}
+<div class="activity"><b>{{ a["activity_type"] }}</b><span>{{ a["activity_date"] }}</span><p>{{ a["notes"] or "No notes." }}</p></div>
+{% else %}<p class="muted">No activities recorded yet.</p>{% endfor %}
+</section>
+</div>
+<form method="post" action="{{ url_for('delete_prospect', pid=prospect['id']) }}" onsubmit="return confirm('Delete this prospect?')">
+<button class="danger">Delete Prospect</button>
+</form>
+{% endblock %}

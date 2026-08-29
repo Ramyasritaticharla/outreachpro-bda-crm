@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – OutreachPro{% endblock %}
+{% block content %}
+<div class="top">
+  <div><h1>Business Development Dashboard</h1><p>Manage prospects, outreach, follow-ups and opportunities.</p></div>
+  <a class="btn" href="{{ url_for('add_prospect') }}">+ Add Prospect</a>
+</div>
+
+<div class="cards">
+  <div class="card"><span>Total Prospects</span><strong>{{ total }}</strong><small>All records</small></div>
+  <div class="card"><span>Active Opportunities</span><strong>{{ interested }}</strong><small>Interested / meetings / proposals</small></div>
+  <div class="card"><span>Pipeline Value</span><strong>₹{{ "{:,.0f}".format(pipeline) }}</strong><small>Open opportunities</small></div>
+  <div class="card"><span>Conversion Rate</span><strong>{{ conversion }}%</strong><small>{{ won }} won</small></div>
+</div>
+
+<div class="grid two">
+  <section class="panel">
+    <h2>Sales Pipeline</h2>
+    <div class="bars">
+    {% for row in status_rows %}
+      <div class="bar-row"><label>{{ row["status"] }}</label><div class="bar"><i style="width:{{ (row['c'] / total * 100) if total else 0 }}%"></i></div><b>{{ row["c"] }}</b></div>
+    {% endfor %}
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Lead Sources</h2>
+    {% for row in source_rows %}
+      <div class="source-row"><span>{{ row["source"] or "Other" }}</span><b>{{ row["c"] }}</b></div>
+    {% endfor %}
+  </section>
+</div>
+
+<div class="grid two">
+<section class="panel">
+<h2>Upcoming Follow-ups</h2>
+{% if upcoming %}
+<table><tr><th>Prospect</th><th>Company</th><th>Date</th></tr>
+{% for p in upcoming %}<tr><td><a href="{{ url_for('prospect_detail', pid=p['id']) }}">{{ p["name"] }}</a></td><td>{{ p["company"] }}</td><td>{{ p["next_followup"] }}</td></tr>{% endfor %}
+</table>
+{% else %}<p class="muted">No upcoming follow-ups.</p>{% endif %}
+</section>
+<section class="panel">
+<h2>Recent Prospects</h2>
+{% for p in recent %}
+<div class="recent"><div><a href="{{ url_for('prospect_detail', pid=p['id']) }}">{{ p["name"] }}</a><small>{{ p["company"] }}</small></div><span class="pill">{{ p["status"] }}</span></div>
+{% endfor %}
+</section>
+</div>
+{% endblock %}
